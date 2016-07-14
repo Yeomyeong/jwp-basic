@@ -30,6 +30,7 @@ public class LoginController extends HttpServlet {
         if (user == null) {
            req.setAttribute("loginFailed", true);
            forward("/user/login.jsp", req, resp);
+            return;
         }
         if (user.matchPassword(password)) {
             HttpSession session = req.getSession();
