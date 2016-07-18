@@ -9,12 +9,7 @@ import java.util.List;
 public class UserDao {
 	public void insert(User user) throws SQLException {
 		new JdbcTemplate()
-				.update("INSERT INTO USERS VALUES (?, ?, ?, ?)", pstmt -> {
-            pstmt.setString(1, user.getUserId());
-            pstmt.setString(2, user.getPassword());
-            pstmt.setString(3, user.getName());
-            pstmt.setString(4, user.getEmail());
-        });
+				.update("INSERT INTO USERS VALUES (?, ?, ?, ?)",user.getUserId(), user.getPassword(), user.getName(), user.getEmail());
 	}
 
 	public void update(User user) throws SQLException {

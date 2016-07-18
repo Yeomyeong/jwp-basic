@@ -7,6 +7,7 @@ import java.sql.SQLException;
 /**
  * Created by wymstar on 7/14/16.
  */
+@FunctionalInterface
 public interface RowMapper {
     Object mapRow(ResultSet rs) throws SQLException;
 }

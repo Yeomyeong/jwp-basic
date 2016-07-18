@@ -15,6 +15,21 @@ import java.util.List;
 public class JdbcTemplate<T> {
 
 
+    public void update (String query, Object ... objects) throws SQLException {
+//        update(query, pstmt -> {
+//            for (int i = 0, len = objects.length; i < len ; i++) {
+//                pstmt.setString(i+1, objects[i].toString());
+//            }
+//        });
+
+        update(query,
+            pstmt -> {
+                for (int i = 0, len = objects.length; i < len ; i++)
+                    pstmt.setString(i+1, objects[i].toString());
+            }
+        );
+    }
+
     public void update (String query, PreparedStatementSetter setter) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
