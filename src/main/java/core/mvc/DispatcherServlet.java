@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.nmvc.AnnotationHandlerMapping;
+import core.nmvc.HandlerExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +19,15 @@ public class DispatcherServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
 	private RequestMapping rm;
+	private AnnotationHandlerMapping ahm;
 
 	@Override
 	public void init() throws ServletException {
 		rm = new RequestMapping();
 		rm.initMapping();
+
+		ahm = new AnnotationHandlerMapping("next.controller");
+		ahm.initialize();
 	}
 
 	@Override
@@ -32,10 +38,25 @@ public class DispatcherServlet extends HttpServlet {
 		Controller controller = rm.findController(req.getRequestURI());
 		ModelAndView mav;
 		try {
-			mav = controller.execute(req, resp);
-			View view = mav.getView();
-			view.render(mav.getModel(), req, resp);
+			if (controller != null ) {
+				mav = controller.execute(req, resp);
+			} else {
+				HandlerExecution he = ahm.getHandler(req);
+				mav = he.handle(req, resp);
+			}
+			render(req, resp, mav);
+
 		} catch (Throwable e) {
+			logger.error("Exception : {}", e);
+			throw new ServletException(e.getMessage());
+		}
+	}
+
+	private void render(HttpServletRequest req, HttpServletResponse resp, ModelAndView mav) throws ServletException {
+		View view = mav.getView();
+		try {
+			view.render(mav.getModel(), req, resp);
+		} catch (Exception e) {
 			logger.error("Exception : {}", e);
 			throw new ServletException(e.getMessage());
 		}
